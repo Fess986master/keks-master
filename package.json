@@ -1,8 +1,8 @@
 {
-  "name": "keksobooking",
+  "name": "keks",
   "version": "22.0.0",
   "private": true,
-  "description": "Личный проект «Кексобукинг» от HTML Academy",
+  "description": "Личный проект «Кекс» от HTML Academy",
   "repository": {
     "type": "git",
     "url": "git@github.com:htmlacademy-javascript/954381-keksobooking-22.git"
