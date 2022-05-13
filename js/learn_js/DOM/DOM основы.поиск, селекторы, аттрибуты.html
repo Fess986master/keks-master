@@ -1,0 +1,459 @@
+//  LOCATION - ОБЪЕКТ BOM
+// ПОЗВОЛЯЕТ УЗНАТЬ ТЕКУЩИЙ URL
+alert(location.href); // показывает текущий URL
+if (confirm("Перейти на Wikipedia?")) {
+  location.href = "https://wikipedia.org"; // перенаправляет браузер на другой URL
+}
+
+//обращение ко всему окну
+document.body.style.background = 'red'; // сделать фон красным
+setTimeout(() => document.body.style.background = '', 3000); // вернуть назад
+
+// последоватлеьный вывод всех детей body .
+for (let i = 0; i < document.body.childNodes.length; i++) {
+  console.log( document.body.childNodes[i] ); // Text, DIV, Text, UL, ..., SCRIPT
+}
+
+
+// обращение к детям. ниже записи эквивалентны
+elem.childNodes[0] === elem.firstChild
+elem.childNodes[elem.childNodes.length - 1] === elem.lastChild
+
+elem.hasChildNodes()  // для проверки наличия детей
+
+// ОДИН ИЗ СПОСОБЫ ПЕРЕБОРА ДОМ-КОЛЛЕКЦИИ
+for (let node of document.body.childNodes) {
+  alert(node); // покажет все узлы из коллекции
+}
+
+// ДОМ-КОЛЛЕКЦИЯ НЕ МАССИВ , ПОЭТОМУ МЕТОДЫ НЕ РАБОТАЮТ. ЕСЛИ ХОТИМ ЧТО БЫ РАБОТАЛИ, ДЕЛАЕМ ИЗ НИХ НАСТОЯЩИЙ МАССИВ
+alert( Array.from(document.body.childNodes).filter ); // сделали массив
+
+//РОДИТЕЛИ И СОСЕДИ В ДОМЕ
+// родителем <body> является <html>
+alert( document.body.parentNode === document.documentElement ); // выведет true
+// после <head> идёт <body>
+alert( document.head.nextSibling ); // HTMLBodyElement
+// перед <body> находится <head>
+alert( document.body.previousSibling ); // HTMLHeadElement
+
+//НАВИГАЦИЯ ТОЛЬКО ПО ЭЛЕМЕНТАМ (ПРЕДЫДУЩИЕ ГУЛЯЛИ ПО ВСЕМ УЗЛАМ, ВКЛЮЧАЯ ТЕКСТ)
+
+//children – коллекция детей, которые являются элементами.
+//firstElementChild, lastElementChild – первый и последний дочерний элемент.
+//previousElementSibling, nextElementSibling – соседи-элементы.
+//parentElement – родитель-элемент.
+
+//РАЗЛИЧИЯ PARENTNODE И PARENTELEMENT
+alert( document.documentElement.parentNode ); // выведет document
+alert( document.documentElement.parentElement ); // выведет null
+
+while(elem = elem.parentElement) { // идти наверх до <html>
+  alert( elem );
+}
+
+for (let elem of document.body.children) {
+  alert(elem); // DIV, UL, DIV, SCRIPT
+}
+
+// примеры дополнительных свойств для некоторых элементов
+<table id="table">
+  <tr>
+    <td>один</td><td>два</td>
+  </tr>
+  <tr>
+    <td>три</td><td>четыре</td>
+  </tr>
+</table>
+
+<script>
+  // выводит содержимое первой строки, второй ячейки
+  alert( table.rows[0].cells[1].innerHTML ) // "два"
+</script>
+
+// ПОИСК ПО ID
+<div id="elem">
+  <div id="elem-content">Element</div>
+</div>
+
+<script>
+  // получить элемент
+  let elem = document.getElementById('elem');
+
+  // сделать его фон красным
+  elem.style.background = 'red';
+</script>
+
+// ЕСЛИ У ЭЛЕМЕНТА ЕСТЬ ID, МЫ МОЖЕМ НАПРЯМУЮ ОБРАЩАТЬСЯ К НЕМУ БЕЗ ОБЪЯВЛЕНИЯ. ГЛАВНОЕ ЧТОБЫ НЕ БЫЛО КОНФЛИКТА С ОДНОИМЕННОЙ ПЕРЕМЕННОЙ. вообще лучше не использовать
+<div id="elem">
+  <div id="elem-content">Элемент</div>
+</div>
+
+<script>
+  // elem - ссылка на элемент с id="elem"
+  elem.style.background = 'red';
+
+  // внутри id="elem-content" есть дефис, так что такой id не может служить именем переменной
+  // ...но мы можем обратиться к нему через квадратные скобки: window['elem-content']
+</script>
+
+// ПОИСК ПО СЕЛЕКТОРУ. УНИВЕРСАЛЬНО
+<ul>
+  <li>Этот</li>
+  <li>тест</li>
+</ul>
+<ul>
+  <li>полностью</li>
+  <li>пройден</li>
+</ul>
+<script>
+  let elements = document.querySelectorAll('ul > li:last-child');
+
+  for (let elem of elements) {
+    alert(elem.innerHTML); // "тест", "пройден"
+  }
+</script>
+
+
+//QUERYSELECTOR - поиск 1 селектора
+elem.querySelector(css)
+//равно
+elem.querySelectorAll(css)[0]
+
+//МЕТОД MATCHES - ТРУ ИЛИ ФОЛС ЕСЛИ НАХОДИМ ПОДХОДЯЩИЙ ПО СЕЛЕКТОРУ ЭЛЕМЕНТ
+<a href="http://example.com/file.zip">...</a>
+<a href="http://ya.ru">...</a>
+
+<script>
+  // может быть любая коллекция вместо document.body.children
+  for (let elem of document.body.children) {
+    if (elem.matches('a[href$="zip"]')) {
+      alert("Ссылка на архив: " + elem.href );
+    }
+  }
+</script>
+
+// CLOSEST - ПОИСК ВВЕРХ ПО ИЕРАРХИИ РОДИТЕЛЕЙ ВКЛЮЧАЯ САМ ЭЛЕМЕНТ
+
+<h1>Содержание</h1>
+
+<div class="contents">
+  <ul class="book">
+    <li class="chapter">Глава 1</li>
+    <li class="chapter">Глава 2</li>
+  </ul>
+</div>
+
+<script>
+  let chapter = document.querySelector('.chapter'); // LI
+
+  alert(chapter.closest('.book')); // UL
+  alert(chapter.closest('.contents')); // DIV
+
+  alert(chapter.closest('h1')); // null (потому что h1 - не предок)
+</script>
+
+
+//Ищем элементы с классом .article:
+<form name="my-form">
+  <div class="article">Article</div>
+  <div class="long article">Long article</div>
+</form>
+
+<script>
+  // ищем по имени атрибута
+  let form = document.getElementsByName('my-form')[0];
+
+  // ищем по классу внутри form
+  let articles = form.getElementsByClassName('article');
+  alert(articles.length); // 2, находим два элемента с классом article
+</script>
+
+// ТИПОВЫЕ ПОИСКИ
+
+// 1. Таблица с `id="age-table"`.
+let table = document.getElementById('age-table')
+
+// 2. Все label в этой таблице
+table.getElementsByTagName('label')
+// или
+document.querySelectorAll('#age-table label')
+
+// 3. Первый td в этой таблице
+table.rows[0].cells[0]
+// или
+table.getElementsByTagName('td')[0]
+// или
+table.querySelector('td')
+
+// 4. Форма с name="search"
+// предполагаем, что есть только один элемент с таким name в документе
+let form = document.getElementsByName('search')[0]
+// или, именно форма:
+document.querySelector('form[name="search"]')
+
+// 5. Первый input в этой форме
+form.getElementsByTagName('input')[0]
+// или
+form.querySelector('input')
+
+// 6. Последний input в этой форме
+let inputs = form.querySelectorAll('input') // найти все input
+inputs[inputs.length-1] // взять последний
+
+//  НАСЛЕДИЕ
+alert( document.body.constructor.name ); // HTMLBodyElement
+
+alert( document.body instanceof HTMLBodyElement ); // true
+alert( document.body instanceof HTMLElement ); // true
+alert( document.body instanceof Element ); // true
+alert( document.body instanceof Node ); // true
+alert( document.body instanceof EventTarget ); // true
+
+// ИМЕНА ТЕГОВ И НОДОВ
+alert( document.body.nodeName ); // BODY - есть у всех нод
+alert( document.body.tagName ); // BODY - есть только у эл-тов. У текста и комментов покажет undefined
+
+// ДОБАВЛЕНИЕ МЕТОДОВ И СВОЙСТВ В ДОМ-ЭЛЕМЕНТЫ КАК ДЛЯ ОБЫЧНОГО ОБЪЕКТА
+document.body.sayTagName = function() {
+  alert(this.tagName);
+};
+document.body.sayTagName(); // BODY (значением "this" в этом методе будет document.body)
+
+// ИЗМЕНЕНИЕ ВСТРОЕННЫХ ПРОТОТИПОВ
+Element.prototype.sayHi = function() {
+  alert(`Hello, I'm ${this.tagName}`);
+};
+document.documentElement.sayHi(); // Hello, I'm HTML
+document.body.sayHi(); // Hello, I'm BODY
+
+// НЕСТАНДАРТНЫЕ ТЕГИ НЕ ПРЕОБРАЗУЮТСЯ В СВОЙСТВА ДОМ
+<body id="test" something="non-standard">
+  <script>
+    alert(document.body.id); // test
+    // нестандартный атрибут не преобразуется в свойство
+    alert(document.body.something); // undefined
+  </script>
+</body>
+
+
+// ЭТИ МЕТОДДЫ РАБОТАЮТ С САМИМ HTML, ПОЭТОМУ КУШАЮТ ДАЖЕ НЕСТАНДАРТНЫЕ
+elem.hasAttribute(name) – проверяет наличие атрибута.
+elem.getAttribute(name) – получает значение атрибута.
+elem.setAttribute(name, value) – устанавливает значение атрибута.
+elem.removeAttribute(name) – удаляет атрибут.
+elem.attributes - список атрибутов
+
+// ПРИМЕРЫ ИСПОЛЬЗОВАНИЯ
+<!DOCTYPE html>
+<html>
+<body>
+  <div id="elem" about1="Elephant"> bigass
+  </div>
+  <script>
+    console.log( elem.getAttribute('About1') ); // (1) 'Elephant', чтение
+    elem.setAttribute('Test', 123); // (2), запись
+    console.log( elem.outerHTML ); // (3), посмотрим, есть ли атрибут в HTML (да)
+    for (let attr of elem.attributes) { // (4) весь список
+      console.log( `ass ${attr.name} = ${attr.value}` );
+    }
+    console.log(elem.attributes);
+  </script>
+</body>
+</html>
+
+
+// НЕ ВСЕ АТТРИБУТЫ СТРОКИ. ИСКЛЮЧЕНИЯ ТИПА CHEKED, TYPE
+<div id="div" style="color:red;font-size:120%">Hello</div>
+<script>
+  // строка
+  alert(div.getAttribute('style')); // color:red;font-size:120%
+
+  // объект
+  alert(div.style); // [object CSSStyleDeclaration]
+  alert(div.style.color); // red
+</script>
+
+// ЕСЛИ НУЖНО ТОЧНОЕ ЗНАЧЕНИЕ АТТРИБУТА, ИСПОЛЬЗУЕМ GETATTRIBUTE, ИНАЧЕ НЕКОТОРЫЕ АТТРИБУТЫ ВЫГЛЯДЯТ ПО ДРУГОМУ
+
+<a id="a" href="#hello">link</a>
+<script>
+  // атрибут
+  console.log(a.getAttribute('href')); // #hello
+  // свойство
+  console.log(a.href ); // полный URL в виде http://site.com/page#hello
+</script>
+
+// ПРИМЕР ИСПОЛЬЗОВАНИЯ НЕСТАНДАРТНЫХ АТТРИБУТОВ В ХТМЛ
+<!-- пометить div, чтобы показать здесь поле "name" -->
+<div show-info="name"></div>
+<!-- а здесь возраст "age" -->
+<div show-info="age"></div>
+<script>
+  // код находит элемент с пометкой и показывает запрошенную информацию
+  let user = {
+    name: "Pete",
+    age: 25
+  };
+  for(let div of document.querySelectorAll('[show-info]')) {
+    // вставить соответствующую информацию в поле
+    let field = div.getAttribute('show-info');
+    div.innerHTML = user[field]; // сначала Pete в name, потом 25 в age
+  }
+</script>
+
+
+
+// INNERHTML - МОЩНЫЙ ИНСТРУМЕНТ. МОЖНО ЧИТАТЬ И ПЕРЕЗАПИСЫВАТЬ ДАННЫЕ
+<body>
+  <p>Параграф</p>
+  <div>DIV</div>
+
+  <script>
+    alert( document.body.innerHTML ); // читаем текущее содержимое
+    document.body.innerHTML = 'Новый BODY!'; // заменяем содержимое
+  </script>
+
+</body>
+
+// OUTERHTML - ЗАМЕНЯЕТ САМ ЭЛЕМЕНТ, ПЛЮС САМОГО СЕБЯ. РАБОТАЕТ СТРАННО - ПЕРЕЗАПИСЫВАЕТ ХТМЛ, НО СОХРАНЯЕТ В ПЕРЕМЕННОЙ САМОГО СЕБЯ
+<div>Привет, мир!</div>
+
+<script>
+  let div = document.querySelector('div');
+
+  // заменяем div.outerHTML на <p>...</p>
+  div.outerHTML = '<p>Новый элемент</p>'; // (*)
+
+  // Содержимое div осталось тем же!
+  alert(div.outerHTML); // <div>Привет, мир!</div> (**)
+</script>
+
+<div id="news">
+  <h1>Срочно в номер!</h1>
+  <p>Марсиане атаковали человечество!</p>
+</div>
+
+<script>
+  // Срочно в номер! Марсиане атаковали человечество!
+  alert(news.textContent);
+</script>
+
+
+// ВСТАВКА КОНТЕНТА
+<div id="elem1"></div>
+<div id="elem2"></div>
+
+<script>
+  let name = prompt("Введите ваше имя?", "<b>Винни-пух!</b>");
+
+  elem1.innerHTML = name;
+  elem2.textContent = name;
+</script>
+
+// ЭЛЕМЕНТ HIDDEN
+<div>Оба тега DIV внизу невидимы</div>
+<div hidden>С атрибутом "hidden"</div>
+<div id="elem">С назначенным JavaScript свойством "hidden"</div>
+<script>
+  elem.hidden = true;
+</script>
+-------------------------------
+<div id="elem">Мигающий элемент</div>
+<script>
+  setInterval(() => elem.hidden = !elem.hidden, 1000);
+</script>
+
+// ЗАДАЧИ -------------------------------------
+
+// поиск в документе:
+
+<html>
+<body>
+  <div>Пользователи:</div>
+  <ul>
+    <li>Джон</li>
+    <li>Пит</li>
+  </ul>
+</body>
+</html>
+
+// DIV
+document.body.firstElementChild
+// или
+document.body.children[0]
+// или (первый узел пробел, поэтому выбираем второй)
+document.body.childNodes[1]
+//<UL>
+document.body.lastElementChild
+// или
+document.body.children[1]
+// получаем <ul>, и его последнего ребёнка
+document.body.lastElementChild.lastElementChild
+
+
+// ИСПОЛЬЗОВАНИЕ НЕСТАНДАРТНЫХ АТРИБУТОВ
+<!-- пометить div, чтобы показать здесь поле "name" -->
+<div show-info="name"></div>
+<!-- а здесь возраст "age" -->
+<div show-info="age"></div>
+<script>
+  // код находит элемент с пометкой и показывает запрошенную информацию
+  let user = {
+    name: "Pete",
+    age: 25
+  };
+  for(let div of document.querySelectorAll('[show-info]')) {
+    // вставить соответствующую информацию в поле
+    let field = div.getAttribute('show-info');
+    div.innerHTML = user[field]; // сначала Pete в name, потом 25 в age
+  }
+</script>
+
+
+<style>
+  /* стили зависят от пользовательского атрибута "order-state" */
+  .order[order-state="new"] {
+    color: green;
+  }
+  .order[order-state="pending"] {
+    color: blue;
+  }
+  .order[order-state="canceled"] {
+    color: red;
+  }
+</style>
+<div class="order" order-state="new">
+  A new order.
+</div>
+<div class="order" order-state="pending">
+  A pending order.
+</div>
+<div class="order" order-state="canceled">
+  A canceled order.
+</div>
+
+// немного проще, чем удаление старого/добавление нового класса
+div.setAttribute('order-state', 'canceled');
+
+// ИСПОЛЬЗОВАНИЕ СТАНДАРТИЗИРОВАНННЫХ НЕСТАНДАРТНЫХ АТТРИБУТОВ
+<style>
+  [data-order-state="new"] {
+    color: green;
+  }
+  .order[data-order-state="pending"] {
+    color: blue;
+  }
+  .order[data-order-state="canceled"] {
+    color: red;
+  }
+</style>
+<div id="order" class="order" data-order-state="new">
+  A new order.
+</div>
+<script>
+  // чтение
+  alert(order.dataset.orderState); // new
+  // изменение
+  order.dataset.orderState = "pending"; // (*)
+</script>
