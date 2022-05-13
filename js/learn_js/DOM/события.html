@@ -1,0 +1,397 @@
+// РАБОАТ THIS В ОБРАБОТЧИКЕ
+<button onclick="alert(this.innerHTML)">Нажми меня</button>
+
+// ADDEVENTLISTENER
+<input id="elem" type="button" value="Нажми меня"/>
+
+<script>
+  function handler1() {
+    alert('Спасибо!');
+  };
+
+  function handler2() {
+    alert('Спасибо ещё раз!');
+  }
+
+  elem.onclick = () => alert("Привет");
+  elem.addEventListener("click", handler1); // Спасибо!
+  elem.addEventListener("click", handler2); // Спасибо ещё раз!
+</script>
+
+// DOMContentLoaded - СОБЫТИЕ, КОТОРОЕ СРАБАТЫВАЕТ ПОСЛЕ ПОСТРОЕНИЕ ДОМА
+document.addEventListener("DOMContentLoaded", function() {
+  alert("DOM построен"); // а вот так сработает
+});
+
+// event - объект события
+<input type="button" value="Нажми меня" id="elem">
+<script>
+  elem.onclick = function(event) {
+    // вывести тип события, элемент и координаты клика
+    alert(event.type + " на " + event.currentTarget);
+    alert("Координаты: " + event.clientX + ":" + event.clientY);
+  };
+</script>
+
+
+// ВЫЗОВ В КАЧЕСТВЕ ОБРАБОТЧИКА - ОБЪЕКТА СОБЫТИЯ HANDLEEVENT(EVENT)
+<button id="elem">Нажми меня</button>
+<script>
+  elem.addEventListener('click', {
+    handleEvent(event) {
+      alert(event.type + " на " + event.currentTarget);
+    }
+  });
+</script>
+
+
+// ВЫЗОВ В КАЧЕСТВЕ ОБРАБОТЧИКА -  ОБЪЕКТА ИЗ КЛАССА С  СОБЫТИЕМ HANDLEEVENT(EVENT)
+<button id="elem">Нажми меня</button>
+<script>
+  class Menu {
+    handleEvent(event) {
+      switch(event.type) {
+        case 'mousedown':
+          elem.innerHTML = "Нажата кнопка мыши";
+          break;
+        case 'mouseup':
+          elem.innerHTML += "...и отжата.";
+          break;
+      }
+    }
+  }
+  let menu = new Menu();
+  elem.addEventListener('mousedown', menu);
+  elem.addEventListener('mouseup', menu);
+</script>
+
+// обработчик нескольких событий
+<button id="elem">Нажми меня</button>
+<script>
+  class Menu {
+    handleEvent(event) {
+      // mousedown -> onMousedown
+      let method = 'on' + event.type[0].toUpperCase() + event.type.slice(1);
+      this[method](event);
+    }
+    onMousedown() {
+      elem.innerHTML = "Кнопка мыши нажата";
+    }
+    // onMouseup() {
+    //   elem.innerHTML += "...и отжата.";
+    // }
+    onСlick() {
+      elem.innerHTML += "...и клик.";
+    }
+  }
+  let menu = new Menu();
+  elem.addEventListener('mousedown', menu);
+  elem.addEventListener('mouseup', menu);
+</script>
+
+
+
+// КАК РАБОТАЕТ ВСПЛЫТИЕ
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="example.css">
+
+  <style>
+    form {
+  background-color: green;
+  position: relative;
+  width: 150px;
+  height: 150px;
+  text-align: center;
+  cursor: pointer;
+}
+
+div {
+  background-color: blue;
+  position: absolute;
+  top: 25px;
+  left: 25px;
+  width: 100px;
+  height: 100px;
+}
+
+p {
+  background-color: red;
+  position: absolute;
+  top: 25px;
+  left: 25px;
+  width: 50px;
+  height: 50px;
+  line-height: 50px;
+  margin: 0;
+}
+
+body {
+  line-height: 25px;
+  font-size: 16px;
+}
+  </style>
+
+</head>
+
+
+<body>
+  Клик покажет оба: и <code>event.target</code>, и <code>this</code> для сравнения:
+
+  <form id="form">FORM
+    <div>DIV
+      <p>P</p>
+    </div>
+  </form>
+
+  <script>
+    form.onclick = function(event) {
+  event.target.style.backgroundColor = 'yellow';
+  // браузеру нужно некоторое время, чтобы зарисовать всё жёлтым
+  setTimeout(() => {
+    alert("target = " + event.target.tagName + ", this=" + this.tagName);
+    event.target.style.backgroundColor = ''
+  }, 0);
+};
+  </script>
+</body>
+</html>
+
+
+// делегирование событий
+
+<script>
+  table.onclick = function(event) {
+  let td = event.target.closest('td'); // (поднятие по предкам до нужного тега)
+  if (!td) return; // (если ничего не нашлось - ничего не делаем)
+  if (!table.contains(td)) return; // (проверка найденного тега на предмет является ли он чилдреном)
+  highlight(td); // (4)
+};
+
+</script>
+
+
+// ЭЛЕГАНТНОЕ МЕНЮ НА НЕСТАНДАРТНЫХ АТТРИБУТАХ
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <meta charset="utf-8">
+
+</head>
+
+
+<body>
+  <div id="menu">
+    <button data-action="save">Сохранить</button>
+    <button data-action="load">Загрузить</button>
+    <button data-action="search">Поиск</button>
+  </div>
+
+  <script>
+    class Menu {
+      constructor(elem) {
+       // this._elem = elem;
+        elem.onclick = this.onClick1.bind(this); // (*)
+      }
+
+      save() {
+        alert('сохраняю');
+      }
+
+      load() {
+        alert('загружаю');
+      }
+
+      search() {
+        alert('ищу');
+      }
+
+      onClick1(event) {
+        let action = event.target.dataset.action;
+        if (action) {
+          this[action]();
+        }
+      }
+    }
+    console.log(menu);
+    menu = new Menu(menu);  // объект с полем _elem
+    //new Menu(menu);
+    console.log(menu);
+  </script>
+</body>
+</html>
+
+
+// СЧЕТЧИК НА ОСНОВЕ ПОЛЬЗОВАТЕЛЬСКИХ АТТРИБУТОВ . ГИБКАЯ ВЕЩЬ
+
+Счётчик: <input type="button" value="1" data-counter>
+Ещё счётчик: <input type="button" value="2" data-counter>
+<script>
+  document.addEventListener('click', function(event) {
+    if (event.target.dataset.counter != undefined) { // если есть атрибут...
+      event.target.value++;
+    }
+  });
+</script>
+
+
+// ИСПОЛЬЗОВАНИЕ ПОЛЬЗОВАТЕЛЬСКИХ АТТРИБУТОВ ДЛЯ УПРАВЛЕНИЯ ПОВЕДЕНИЕМ ЭЛЕМЕНТОВ
+<button data-toggle-id="subscribe-mail">
+  Показать форму подписки
+</button>
+<form id="subscribe-mail" hidden>
+  Ваша почта: <input type="email">
+</form>
+<script>
+  document.addEventListener('click', function(event) {
+    let id = event.target.dataset.toggleId;
+    if (!id) return;
+    let elem = document.getElementById(id);
+    elem.hidden = !elem.hidden;
+  });
+</script>
+
+
+
+
+// КЛАВИША РАБОТАЮЩАЯ ТОЛЬКО ПРИ НАЖАТЫХ ШИФТ+АЛЬТ
+<button id="button">Нажми Alt+Shift+Click на мне!</button>
+<script>
+  button.onclick = function(event) {
+    if (event.altKey && event.shiftKey) {
+      alert('Ура!');
+    }
+  };
+</script>
+
+// ИНПУТ, ПОКАЗЫВАЮЩИЙ КООРДИНАТЫ
+<input onmousemove="this.value=event.clientX+':'+event.clientY" value="Наведи на меня мышь"></input>
+
+// ДВОЙНОЙ КЛИК
+<span ondblclick="alert('dblclick')">Сделайте двойной клик на мне</span>
+
+// ONCOPY - ПРЕДОТВРАЩЕНИЕ КОПИРОВАНИЯ ТЕКСТА
+<div oncopy="alert('Копирование запрещено!');return false">
+  Уважаемый пользователь,
+  Копирование информации запрещено для вас.
+  Если вы знаете JS или HTML, вы можете найти всю нужную вам информацию в исходном коде страницы.
+</div>
+
+
+
+// ОТМЕНА ДЕЙСТВИЯ ПО УМОЛЧАНИЮ ДЛЯ ССЫЛКИ
+<script>
+  menu.onclick = function(event) {
+  if (event.target.nodeName != 'A') return;
+  let href = event.target.getAttribute('href');
+  alert( href ); // может быть подгрузка с сервера, генерация интерфейса и т.п.
+  return false; // отменить действие браузера (переход по ссылке)
+};
+</script>
+
+
+// ИСПОЛЬЗОВАНИЕ PREVENTDEFAULT ДЛЯ ПРОВЕРКИ, ОБРАБОТАНО ЛИ СОБЫТИЕ
+<p>Правый клик вызывает меню документа (добавлена проверка event.defaultPrevented)</p>
+<button id="elem">Правый клик вызывает меню кнопки</button>
+
+<script>
+  elem.oncontextmenu = function(event) {
+    event.preventDefault();
+    alert("Контекстное меню кнопки");
+  };
+
+  document.oncontextmenu = function(event) {
+    if (event.defaultPrevented) return;
+
+    event.preventDefault();
+    alert("Контекстное меню документа");
+  };
+</script>
+
+
+// ДОБАВЛЕНИЕ ПОЛЬЗОВАТЕЛЬСКОГО СОБЫТИЯ  ПРИ ПОМОЩИ NEW EVENT И ВЫЗОВ ПРИ ПОМОЩИ DISPATCHEVENT
+
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>Галерея</title>
+  <meta charset="utf-8">
+</head>
+<body>
+  <h2>rehsdtehj</h2>
+  <h1 id="elem">Привет из кода!</h1>
+<h3>htsdhjtrj</h3>
+  <script>
+    // ловим на document...
+    document.addEventListener("hello", function(event) { // (1)
+      alert("Привет от " + event.target.tagName); // Привет от H1
+    });
+    // ...запуск события на элементе!
+    let event1 = new Event("hello", {bubbles: true}); // (2)
+    elem.dispatchEvent(event1);   //запуск
+    // обработчик на document сработает и выведет сообщение.
+  </script>
+</body>
+</html>
+
+
+// СПЕЦИФИЧЕСКИЕ ПОЛЬЗОВАТЕЛЬСКИЕ КОНСТРУКТОРЫ
+<script>
+  let event = new MouseEvent("click", {
+  bubbles: true,
+  cancelable: true,
+  clientX: 100,
+  clientY: 100
+});
+alert(event.clientX); // 100
+</script>
+
+// ИСПОЛЬЗОВАНИЕ PREVENTDEFAULT ДЛЯ ПОЛЬЗОВАТЕЛЬСКИХ СОБЫТИЙ
+
+<pre id="rabbit">
+  |\   /|
+   \|_|/
+   /. .\
+  =\_Y_/=
+   {>o<}
+</pre>
+<button onclick="hide()">Hide()</button>
+<script>
+  // hide() будет вызван при щелчке на кнопке
+  function hide() {
+    let event = new CustomEvent("hide", {
+      cancelable: true // без этого флага preventDefault не сработает
+    });
+    if (!rabbit.dispatchEvent(event)) {
+      alert('Действие отменено обработчиком');
+    } else {
+      rabbit.hidden = true;
+    }
+  }
+  rabbit.addEventListener('hide', function(event) {
+    if (confirm("Вызвать preventDefault?")) {
+      event.preventDefault();
+    }
+  });
+</script>
+
+//  ПРОВЕРКА ТЕЛЕФОННОГО НОМЕРА
+<input onkeydown="checkPhoneKey(event.key)" placeholder="Введите телефон" type="tel">
+<script>
+  function checkPhoneKey(key) {
+    console.log(event);
+    console.log(`event.key = ${key}`);
+    //return (key >= '0' && key <= '9') || key == '+' || key == '(' || key == ')' || key == '-';   // вариант из задачи. требует возвращать эту функцию в onkeydown
+    if ((key >= '0' && key <= '9') || (key == '+') || (key == '(') || (key == ')') || (key == '-')) { console.log('true') }
+    else {
+      event.preventDefault();
+    }
+  }
+</script>
+
+
+

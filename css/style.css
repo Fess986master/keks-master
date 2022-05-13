@@ -85,7 +85,7 @@ fieldset {
 
 .map__canvas {
   width: 100%;
-  height: 500px;
+  height: 480px;
   background-color: #dddddd;
 }
 
@@ -391,6 +391,12 @@ fieldset {
   -webkit-box-shadow: 0 0 2px 2px #ff6547;
           box-shadow: 0 0 2px 2px #ff6547;
 }
+
+.validation input:focus {
+  border-color: green;
+  border-width: 4px;
+}
+
 
 .ad-form__element--time {
   -ms-flex-preferred-size: 50%;
@@ -859,7 +865,7 @@ fieldset {
 
 .popup__feature {
   display: inline-block;
-  overflow: hidden;
+   overflow: hidden;
 
   width: 30px;
   height: 28px;
